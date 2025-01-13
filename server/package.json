@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "concurrently": "^11.0.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "joi": "^17.13.3",
@@ -10,8 +11,10 @@
   "name": "application-organizer",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
+    "start": "node server.js",
+    "client": "cd ../react-app-organizer && npm start",
+    "dev": "concurrently \"npm run start\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

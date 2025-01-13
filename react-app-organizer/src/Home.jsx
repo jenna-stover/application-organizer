@@ -1,83 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import './styles/Home.css';
-import AddForm from './components/AddForm';
-import EditForm from './components/EditForm';
-import ProspectList from './components/ProspectList';
-import ProspectDetails from './components/ProspectDetails';
-import ProgressBar from './components/ProgressBar';
 import { getProspects } from './api';
+import './styles/Home.css';
 
-function App() {
+const Home = () => {
   const [prospects, setProspects] = useState([]);
-  const [selectedProspect, setSelectedProspect] = useState(null);
-
-  const updateProspects = async () => {
-    const data = await getProspects();
-    setProspects(data);
-  };
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    updateProspects();
+    const fetchProspects = async () => {
+      try {
+        const data = await getProspects();
+        setProspects(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchProspects();
   }, []);
 
-  const handleAddProspect = (newProspect) => {
-    setProspects((prevProspects) => [...prevProspects, newProspect]);
-  };
+  if(error) {
+    console.log("Error fetching prospects:", error);
+    return <div>Error: {error}</div>;
+  }
 
-  const handleEditProspect = (updatedProspect) => {
-    setProspects((prevProspects) =>
-      prevProspects.map((prospect) =>
-        prospect._id === updatedProspect._id ? updatedProspect : prospect
-      )
-    );
-  };
 
   return (
-    <div classNameName="main-container">
+    <div className="content-container">
       <header className="main-header">
-            <h1><a href="#">Application Organizer</a></h1>
-        </header>
-        <main classNameName= "main-content">
-            <div className="progress-container">
-              <ProgressBar prospects={prospects} />
-            </div>
-
-            <div className="main-container">
-                <div className="prospect-list-container split">
-                    <div id="center-prospect-list">
-                        <h2>List of Job Prospects</h2>
-                        <div id="add-button">
-                            <a href="#">Add Prospect (+)</a>
-                        </div>
-                        <ProspectList onSelect={setSelectedProspect} updateProspects={updateProspects} />
-                        <div id="add-prospect-container" className="dialog transparent">
-                            <AddForm onAddProspect={handleAddProspect}/>
-                        </div> 
-                    </div>
-                </div>
-
-                <div id="prospect-details-container split" className="hidden">
-                    <div id="center-prospect-details">
-                        <div>
-                            <h2>Position Details</h2> 
-                        </div>
-                        
-                        <div id="prospect-details">
-                            <ProspectDetails 
-                                prospect={selectedProspect}
-                                onDelete={setSelectedProspect}
-                                updateProspects={updateProspects}
-                            />
-                        </div>
-                        <div id="edit-prospect-container" className="dialog transparent">
-                            <EditForm onEditProspect={handleEditProspect}/>
-                        </div> 
-                    </div>
-                </div>
-            </div>
-        </main>
+        <h1>Application Organizer</h1>
+      </header>
+      <main className="main-content">
+        <h2>List of Job Prospects</h2>
+        {prospects.length > 0 ? (
+          <ul>
+            {prospects.map((prospect) => (
+              <li key={prospect._id}>{prospect.name}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>No prospects found.</p>
+        )}
+      </main>
     </div>
   );
 }
 
-export default App;
+export default Home;

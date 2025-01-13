@@ -2,7 +2,7 @@
 
 export const getProspects = async () => {
   try {
-    const response = await fetch("api/prospects/");
+    const response = await fetch("/api/prospects/");
     if (!response.ok) {
       throw new Error("Failed to fetch prospects");
     }
